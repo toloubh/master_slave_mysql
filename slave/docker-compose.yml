@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  mysql_slave:
+    image: mysql:latest
+    env_file:
+      - ./mysql_slave.env
+    container_name: "mysql_slave"
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./my.cnf:/etc/mysql/my.cnf
+      - dbdata:/var/lib/mysql
+    networks:
+      - app-network
+    extra_hosts:
+      - "master:116.203.234.98"
+ 
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
+
+#Volumes
+volumes:
+  dbdata:
+    driver: local

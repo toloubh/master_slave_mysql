@@ -1,0 +1,10 @@
+[mysqld]
+server-id = 2
+#replicate-do-db = tera
+log_bin = mysql-bin
+bind_address=0.0.0.0
+relay-log = relay-log
+read_only = 1
+relay-log-index = relay-log.index
+replicate-wild-ignore-table = mysql.%
+expire_logs_days = 7

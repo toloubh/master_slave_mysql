@@ -1,0 +1,8 @@
+[mysqld]
+server-id = 1 #specify a unique server ID. It must be different from every other ID in use by any other source or replica.
+binlog_do_db = tera #Specify a database, which statements will be written to binary log file
+general_log_file = /var/lib/mysql/general.log
+binlog_format=ROW #replica replay only actual changes on the row
+bind_address=0.0.0.0
+log-bin=mysql-bin #Enables bin log and sets the base name and path for the binary log files
+socket=/var/lib/mysql/mysql.sock
