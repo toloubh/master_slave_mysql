@@ -15,7 +15,7 @@ services:
     networks:
       - app-network
     extra_hosts:
-      - "master:116.203.234.98"
+      - "master: x.x.x.x" #ip master server
  
 #Docker Networks
 networks:
