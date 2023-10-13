@@ -13,9 +13,10 @@ MySQL replication is a special setup which involves two or more MySQL servers wh
 Process of replica synchronisation is done through coping and performing SQL statements from source’s binary log. MySQL configuration allows to select the whole source database or only particular tables to be copied to the replica.
 By default synchronisation type for MySQL replication is asynchronous (one-way), which means “replica” does not notify it’s “source” about results of coping and processing events. Additional types of synchronisation (semi-synchronous, synchronous) may be available via plugins or in special setups (like NDB Cluster).
 With MySQL replication you can make some specific configuration types: chained replication, circular (also known as master-master or ring) and combinations of these.
+
 *** Note: The limitation is that replica can have only one source server.
 
-You can run master/build_master.sh to start the Docker Compose for the primary server. Afterward, execute slave/build_slave.sh to initiate the Docker Compose for the secondary server. Alternatively, you can use the following command:
+You can launch the Docker Compose for the primary server by running master/build_master.sh. Then, to set up the Docker Compose for the secondary server, execute slave/build_slave.sh. Alternatively, you can utilize the following command:
 
 1. Run docker compose for primary server
 ```
@@ -26,7 +27,7 @@ cd master
 ```
 sudo docker ps
 ```
-3. Finally, add a replication user on primary server. Create a new user for replication with REPLICATION SLAVE permission:
+3. If you don't run the script but proceed to execute docker-compose up -d, make sure to follow up by creating a new user for replication on the primary server with the necessary REPLICATION SLAVE permission.
 Create a MySql user for replication 
 ```
 sudo docker exec -it mysql_master -u root -p
@@ -35,7 +36,8 @@ mysql > CREATE USER 'replica_usr'@'%' IDENTIFIED WITH mysql_native_password BY '
 Grant permissions to MySql user, granted replication privileges, and flushed the privileges to ensure they are active.
 ```
 mysql > GRANT REPLICATION SLAVE ON *.* TO 'replica_usr'@'%';
-FLUSH PRIVILEGES;
+mysql > GRANT SELECT ON *.* TO 'replica_usr'@'%'; 
+mysql > FLUSH PRIVILEGES;
 ```
 4. use the command below to verify the replication status:
 ```
@@ -55,16 +57,16 @@ cd slave
 ./build_slave.sh
 sudo docker ps
 ```
-6. Now, when we have all the variables, we can modify and run the following command to start a replication:
+6.  If you choose not to run the script and proceed directly with docker-compose up -d, you can then utilize all the available variables to modify and execute the following command to initiate replication:
 ```
 MYSQL > STOP SLAVE;
 MYSQL > CHANGE MASTER TO
-MASTER_HOST='IP Server Master',
+MASTER_HOST='IP Master Server',
 MASTER_PORT=3306,
-MASTER_USER='${DB_USERNAME}', # ex. replica_usr
-MASTER_PASSWORD='${DB_PASSWORD}', # ex. ForSlaveRepPw
-MASTER_LOG_FILE='mysql-bin.000003', # Use the correct log file from the master
-MASTER_LOG_POS=157; # Use the correct log position from the
+MASTER_USER='${DB_USERNAME}', -- e.g., replica_usr
+MASTER_PASSWORD='${DB_PASSWORD}', -- e.g., ForSlaveRepPw
+MASTER_LOG_FILE='mysql-bin.000003', -- Use the correct log file from the master
+MASTER_LOG_POS=157; -- Use the correct log position from the
 MYSQL > START SLAVE;
 ```
 7. Check Slave Status:
